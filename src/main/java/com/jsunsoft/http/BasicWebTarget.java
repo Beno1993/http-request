@@ -49,16 +49,20 @@ class BasicWebTarget implements WebTarget {
     private final CloseableHttpClient closeableHttpClient;
     private final URIBuilder uriBuilder;
     private final HttpUriRequestBuilder httpUriRequestBuilder = new HttpUriRequestBuilder();
+    private RetryContext retryContext;
 
-
-    BasicWebTarget(final CloseableHttpClient closeableHttpClient, final URIBuilder uriBuilder) {
-        this.closeableHttpClient = closeableHttpClient;
-        this.uriBuilder = uriBuilder;
-    }
 
     BasicWebTarget(CloseableHttpClient closeableHttpClient, URIBuilder uriBuilder, Collection<Header> defaultHeaders, Collection<NameValuePair> defaultRequestParameters) {
         this.closeableHttpClient = closeableHttpClient;
         this.uriBuilder = uriBuilder;
+        defaultHeaders.forEach(httpUriRequestBuilder::addHeader);
+        defaultRequestParameters.forEach(httpUriRequestBuilder::addParameter);
+    }
+
+    BasicWebTarget(CloseableHttpClient closeableHttpClient, URIBuilder uriBuilder, Collection<Header> defaultHeaders, Collection<NameValuePair> defaultRequestParameters, RetryContext retryContext) {
+        this.closeableHttpClient = closeableHttpClient;
+        this.uriBuilder = uriBuilder;
+        this.retryContext = retryContext;
         defaultHeaders.forEach(httpUriRequestBuilder::addHeader);
         defaultRequestParameters.forEach(httpUriRequestBuilder::addParameter);
     }
@@ -280,6 +284,12 @@ class BasicWebTarget implements WebTarget {
         ArgsCheck.notNull(nameValuePair, "nameValuePair");
 
         httpUriRequestBuilder.addParameter(nameValuePair);
+        return this;
+    }
+
+    @Override
+    public WebTarget enableRetry(RetryContext retryContext) {
+
         return this;
     }
 }

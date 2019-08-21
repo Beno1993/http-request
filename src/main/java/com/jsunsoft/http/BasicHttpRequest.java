@@ -34,24 +34,26 @@ class BasicHttpRequest implements HttpRequest {
     private final CloseableHttpClient closeableHttpClient;
     private final Collection<Header> defaultHeaders;
     private final Collection<NameValuePair> defaultRequestParameters;
+    private final RetryContext defaultRetryContext;
 
-    BasicHttpRequest(CloseableHttpClient closeableHttpClient, Collection<Header> defaultHeaders, Collection<NameValuePair> defaultRequestParameters) {
+    BasicHttpRequest(CloseableHttpClient closeableHttpClient, Collection<Header> defaultHeaders, Collection<NameValuePair> defaultRequestParameters, RetryContext defaultRetryContext) {
         this.closeableHttpClient = ArgsCheck.notNull(closeableHttpClient, "closeableHttpClient");
         this.defaultHeaders = Collections.unmodifiableList(new ArrayList<>(ArgsCheck.notNull(defaultHeaders, "defaultHeaders")));
         this.defaultRequestParameters = Collections.unmodifiableList(new ArrayList<>(ArgsCheck.notNull(defaultRequestParameters, "defaultRequestParameters")));
+        this.defaultRetryContext = defaultRetryContext;
     }
 
     @Override
     public WebTarget target(URI uri) {
         ArgsCheck.notNull(uri, "uri");
-        return new BasicWebTarget(closeableHttpClient, new URIBuilder(uri), defaultHeaders, defaultRequestParameters);
+        return new BasicWebTarget(closeableHttpClient, new URIBuilder(uri), defaultHeaders, defaultRequestParameters, defaultRetryContext);
     }
 
     @Override
     public WebTarget target(String uri) {
         ArgsCheck.notNull(uri, "uri");
         try {
-            return new BasicWebTarget(closeableHttpClient, new URIBuilder(uri), defaultHeaders, defaultRequestParameters);
+            return new BasicWebTarget(closeableHttpClient, new URIBuilder(uri), defaultHeaders, defaultRequestParameters, defaultRetryContext);
         } catch (URISyntaxException e) {
             throw new IllegalArgumentException(e.getMessage(), e);
         }

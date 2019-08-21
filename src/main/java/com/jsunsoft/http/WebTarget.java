@@ -745,4 +745,6 @@ public interface WebTarget {
     default <T> ResponseHandler<T> trace(TypeReference<T> responseType) {
         return request(HttpMethod.TRACE, responseType);
     }
+
+    WebTarget enableRetry(RetryContext retryContext);
 }

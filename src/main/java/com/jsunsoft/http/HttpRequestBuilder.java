@@ -40,6 +40,7 @@ public class HttpRequestBuilder {
 
     private List<NameValuePair> defaultRequestParameters;
     private Collection<Header> defaultHeaders;
+    private RetryContext defaultRetryContext;
 
     private HttpRequestBuilder(CloseableHttpClient closeableHttpClient) {
         this.closeableHttpClient = ArgsCheck.notNull(closeableHttpClient, "closeableHttpClient");
@@ -189,6 +190,10 @@ public class HttpRequestBuilder {
         return this;
     }
 
+    public HttpRequestBuilder setDefaultRetryContext(RetryContext defaultRetryContext) {
+        this.defaultRetryContext = defaultRetryContext;
+        return this;
+    }
 
     /**
      * Basic Authentication - sending the Authorization header.
@@ -217,6 +222,6 @@ public class HttpRequestBuilder {
         if (defaultRequestParameters == null) {
             defaultRequestParameters = Collections.emptyList();
         }
-        return new BasicHttpRequest(closeableHttpClient, defaultHeaders, defaultRequestParameters);
+        return new BasicHttpRequest(closeableHttpClient, defaultHeaders, defaultRequestParameters, defaultRetryContext);
     }
 }
